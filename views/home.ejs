@@ -18,7 +18,7 @@
                     <small>Tags: <%= todo.tags.join(', ') %></small>
                 </div>
                 <form action="/users/<%= todo.author %>/todos/delete/<%= todo._id %>" method="POST">
-                    <button type="submit" class="btn btn-danger">Complete</button> 
+                    <button type="submit" class="btn btn-danger" style="background-color: green;border-color: green;">Complete</button> 
                 </form>
             </div>
         </div>

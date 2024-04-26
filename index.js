@@ -293,8 +293,8 @@ app.get("/users/:username/todos/:todoTitle", async (req, res) => {
       tags: todo.tags,
     });
   } catch (error) {
-    console.error("Error fetching post:", error);
-    res.status(500).send("Error fetching post.");
+    console.error("Error fetching todo:", error);
+    res.status(500).send("Error fetching todo.");
   }
 });
 

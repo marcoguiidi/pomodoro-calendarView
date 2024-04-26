@@ -49,7 +49,7 @@
                     if (data.length > 0) {
                         data.forEach(function (item) {
                             // Construct the correct URL
-                            var encodedTitle = encodeURIComponent(item.heading);
+                            var encodedTitle = encodeURIComponent(item.title);
                             var link = `<a class="list-group-item list-group-item-action" role="option" href="/users/${item.author}/todos/${encodedTitle}" tabindex="0">${item.title}</a>`;
                             $('#resultList').append(link);
                         });
