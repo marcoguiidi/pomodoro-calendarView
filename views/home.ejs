@@ -1,0 +1,28 @@
+<%- include('partials/header'); -%>
+
+<!-- Display username in greeting -->
+<h1>Home</h1>
+<p>Hi, <%= username %>!</p>
+<p><%= content %></p>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    <% todos.forEach(todo => { %>
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title"><%= todo.title %></h5>
+                  </div>
+                  
+                <div class="card-footer">
+                    <small>by <%= todo.author %> on <%= todo.date.toDateString() %></small>
+                    <small>Tags: <%= todo.tags.join(', ') %></small>
+                </div>
+                <form action="/users/<%= todo.author %>/todos/delete/<%= todo._id %>" method="POST">
+                    <button type="submit" class="btn btn-danger">Complete</button> 
+                </form>
+            </div>
+        </div>
+    <% }); %>
+</div>
+
+<%- include('partials/footer'); -%>

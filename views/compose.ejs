@@ -1,0 +1,109 @@
+<%- include('partials/header'); -%>
+
+<style>
+  #markdown-preview img {
+    max-width: 30%; /* Le immagini nel preview avranno un massimo del 30% della larghezza del contenitore */
+  }
+</style>
+<header>
+  <h1 id="compose-h1">Compose</h1>
+</header>
+<div class="row">
+<div class="col-lg-8 col-md-12 col-sm-12">
+<form method="post" action="/compose" id="form-content">
+  <div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12">
+      <div class="form-floating">
+        <textarea
+          name="title"
+          class="form-control"
+          placeholder="Enter your title"
+          id="floatingTextarea1"
+          style="height: 50px"
+          required
+          aria-label="Title"
+        ></textarea>
+        <label for="floatingTextarea1">Title</label>
+      </div>
+    </div>
+  </div>
+    <div class="col-lg-8">
+      <div class="form-floating tags-input-wrapper" id="tags-container">
+        <input
+          type="text"
+          class="form-control"
+          id="tag-input"
+          placeholder="Add tags..."
+          aria-label="Tags"
+          onkeydown="handleTagInput(event)"
+        />
+        <label for="tag-input">Tags (press Enter to add)</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-3">
+    <div class="col-lg-6">
+      <button type="submit" class="btn btn-primary">Add</button>
+    </div>
+  </div>
+</form>
+</div>
+
+</div>
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/12.0.6/markdown-it.min.js"></script>
+
+<script>
+
+  function handleTagInput(event) {
+    if (event.key === "Enter") { // Add tag on Enter key press
+      event.preventDefault(); // Prevent form submission
+      const tagText = document.getElementById("tag-input").value.trim(); // trimmo gli spazi
+      if (tagText) { // If text is valid
+        addTag(tagText); // Add tag to the list
+        document.getElementById("tag-input").value = ""; // Clear input after adding
+      }
+    }
+  }
+
+  function addTag(tag) {
+    const tagsWrapper = document.getElementById("tags-container"); // Tag container
+    const tagElement = document.createElement("span"); // Create new tag
+
+    tagElement.className = "tag"; // Assign tag class
+    tagElement.innerHTML = `${tag} <button type="button" class="btn-close" onclick="removeTag('${tag}')">&times;</button>`; // Add remove button
+
+    tagsWrapper.appendChild(tagElement); // Add tag to the wrapper
+  }
+
+  function removeTag(tag) {
+    const tagsWrapper = document.getElementById("tags-container");
+    const tags = Array.from(tagsWrapper.getElementsByClassName("tag")); // Get all tag elements
+
+    tags.forEach((t) => {
+      if (t.innerText.includes(tag)) {
+        t.remove(); // Remove the specific tag
+      }
+    });
+  }
+
+  function getTagsArray() {
+    const tagsWrapper = document.getElementById("tags-container");
+    const tags = Array.from(tagsWrapper.getElementsByClassName("tag"));
+    return tags.map(tagElement => tagElement.innerText.replace(" ×", "")); // Remove the close button text
+  }
+
+  document.querySelector("form#form-content").addEventListener("submit", function(event) {
+    const tags = getTagsArray(); // Get all tags before form submission
+    const hiddenInput = document.createElement("input"); // Create a hidden field
+    hiddenInput.type = "hidden";
+    hiddenInput.name = "tags";
+    hiddenInput.value = JSON.stringify(tags); // Store the tags as a JSON array
+    this.appendChild(hiddenInput); // Append to the form
+  });
+
+</script>
+
+<%- include('partials/footer'); -%>
