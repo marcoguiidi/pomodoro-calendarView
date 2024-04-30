@@ -74,21 +74,22 @@ process.on("SIGINT", () => {
 //     },
 //   },
 // });
-const todoSchema = new mongoose.Schema({
-  title: String,
-  date: { type: Date, default: Date.now },
-  completed: { type: Boolean, default: false },
+const eventSchema = new mongoose.Schema({
+  description: String,
+  date: Date,
+  location: String,
   author: String,
-  tags: {
+  participants: {
     type: [String], // Tags as an array
     validate: {
-      validator: function (tags) {
+      validator: function (participants) {
         //controlla che ogni tag sia di tipo stringa, trimma gli spazi ai lati e controlla che la lunghezza sia > 0 
-        return tags.every(tag => typeof tag === 'string' && tag.trim().length > 0);
+        return participants.every(part => typeof part === 'string' && part.trim().length > 0);
       },
-      message: 'All tags must be non-empty strings', // in caso validator non restituisca true
+      message: 'All participants must be non-empty strings', // in caso validator non restituisca true
     },
   },
+  color: String,
 })
 
 
@@ -97,7 +98,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
 });
 
-const Todo = mongoose.model("Todo", todoSchema);
+const Event = mongoose.model("Event", eventSchema);
 const User = mongoose.model("User", userSchema);
 
 // Passport setup for user authentication
@@ -209,19 +210,38 @@ app.get("/", ensureAuthenticated, async (req, res) => {
       console.error("User not found");
       return res.status(404).send("User not found"); // If user is not found
     }
-
-    const todos = await Todo.find({ author: user.username}); 
+ 
 
     res.render("home", {
-      content: "Welcome to your TO-DO list!", // Example content
-      todos: todos.map((todo) => ({
-        ...todo.toObject(), // Convert Mongoose document to plain object
-      })),
+      content: "Welcome to your Pomodoro&Calendar App!", // Example content
       username: user.username, // Pass username to the template
     });
   } catch (error) {
-    console.error("Error fetching posts:", error);
-    res.status(500).send("Error fetching posts."); // Handle errors
+    console.error("Error:", error);
+    res.status(500).send("Error."); // Handle errors
+  }
+});
+
+app.get("/events", ensureAuthenticated, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId);
+
+    const data = await Event.find({ author: user.username });
+
+    const eventData = data.map(event => ({
+      description: event.description,
+      author: event.author,
+      date: event.date, // Ottiene solo la parte della data
+      participants: event.participants,
+      location: event.location,
+      color: event.color
+    }));
+
+    res.json(eventData);
+
+  } catch (error) {
+    res.status(500).json({ error: "Errore durante il recupero dei dati" });
   }
 });
 
@@ -240,110 +260,141 @@ app.post("/compose", ensureAuthenticated, async (req, res) => {
 
 
 // Clean and sanitize tags
-const tags = (req.body.tags && typeof req.body.tags === 'string')
-  ? JSON.parse(req.body.tags)  // Only parse if it's a valid JSON string
-  : Array.isArray(req.body.tags) 
-    ? req.body.tags            // If it's already an array
+const participants = (req.body.participants && typeof req.body.participants === 'string')
+  ? JSON.parse(req.body.participants)  // Only parse if it's a valid JSON string
+  : Array.isArray(req.body.participants) 
+    ? req.body.participants            // If it's already an array
     : [];                      // Fallback to an empty array
 
-const sanitizedTags = tags.map(tag => tag.trim().replace(/[^a-zA-Z0-9-_ ]/g, "")); // Strip special characters and spaces at ends
+const sanitizedParts = participants.map(part => part.trim().replace(/[^a-zA-Z0-9-_ ]/g, "")); // Strip special characters and spaces at ends
 
 
-const newTODO = new Todo({
-  title: req.body.title,
+const newEvent = new Event({
+  description: req.body.description,
   author: user.username,
-  date: Date.now(),
-  tags: sanitizedTags, // Use the sanitized tags array
+  date: req.body.date.split('T')[0],
+  participants: sanitizedParts, // Use the sanitized tags array
+  location: req.body.location,
+  color: req.body.color,
+
 });
 
   try {
-    await newTODO.save(); // Save to the database
-    res.redirect("/"); // Redirect after successful save
+    await newEvent.save(); // Save to the database
+    res.redirect("/calendar"); // Redirect after successful save
   } catch (error) {
-    console.error("Error saving ToDo:", error); // Handle error
-    res.status(500).send("Error saving ToDo."); // Respond with a server error
+    console.error("Error saving:", error); // Handle error
+    res.status(500).send("Error saving."); // Respond with a server error
   }
 });
 
-app.get("/users/:username/todos/:todoTitle", async (req, res) => {
-  try {
-    const username = req.params.username;
-    const todoTitle = decodeURIComponent(req.params.todoTitle);
-    const user = await User.findOne({ username });
-
-    if (!user) {
-      console.error("User not found");
-      return res.status(404).send("User not found");
-    }
-
-    const todo = await Todo.findOne({
-      title: new RegExp("^" + _.escapeRegExp(todoTitle) + "$", "i"),
-      author: username,
-    });
-
-    if (!todo) {
-      return res.status(404).send("Todo not found");
-    }
-
-    res.render("todos", {
-      id: todo._id,
-      title: todo.title,
-      author: todo.author,
-      date: todo.date,
-      tags: todo.tags,
-    });
-  } catch (error) {
-    console.error("Error fetching todo:", error);
-    res.status(500).send("Error fetching todo.");
-  }
+app.get("/calendar", ensureAuthenticated, (req, res) =>  {
+  res.render("calendar");
 });
 
+// app.get("/users/:username/calendar", async (req, res) => {
+//   try {
+//     const username = req.params.username;
+//     // const eventTitle = decodeURIComponent(req.params.eventTitle);
+//     const user = await User.findOne({ username });
 
-app.post("/users/:username/todos/delete/:id", ensureAuthenticated, async (req, res) => {
-  try {
-    const todoID = req.params.id;
-    const todo = await Todo.findById(todoID);
+//     if (!user) {
+//       console.error("User not found");
+//       return res.status(404).send("User not found");
+//     }
 
-    if (!todo) {
-      return res.status(404).send("ToDo not found");
+
+
+//     // const event = await Event.findOne({
+//     //   description: new RegExp("^" + _.escapeRegExp(todoTitle) + "$", "i"),
+//     //   author: username,
+//     // });
+
+
+//     // if (!event) {
+//     //   return res.status(404).send("not found");
+//     // }
+
+//     // res.render("calendar", {
+//     //   id: todo._id,
+//     //   title: todo.title,
+//     //   author: todo.author,
+//     //   date: todo.date,
+//     //   tags: todo.tags,
+//     // });
+//   } catch (error) {
+//     console.error("Error fetching todo:", error);
+//     res.status(500).send("Error fetching todo.");
+//   }
+// });
+
+
+// app.post("/users/:username/todos/delete/:id", ensureAuthenticated, async (req, res) => {
+//   try {
+//     const todoID = req.params.id;
+//     const todo = await Todo.findById(todoID);
+
+//     if (!todo) {
+//       return res.status(404).send("ToDo not found");
+//     }
+
+//     if (todo.author !== req.user.username) {
+//       return res.status(403).send("You don't have permission to delete this todo.");
+//     }
+
+//     await Todo.findByIdAndDelete(todoID);
+
+//     res.redirect("/"); // Redirect after successful deletion
+//   } catch (error) {
+//     console.error("Error deleting todo:", error);
+//     res.status(500).send("Error deleting todo.");
+//   }
+// });
+
+// app.get('/search', async (req, res) => {
+//   const queryText = req.query.query.trim();
+
+//   if (queryText.length < 3) {
+//     return res.status(400).send("Query text must be at least 3 characters long.");
+//   }
+
+//   try {
+//     // Use `$or` to search for posts with matching titles or tags
+//     const matchingTodos = await Todo.find({
+//       $or: [
+//         { title: { $regex: queryText, $options: 'i' } }, // Case-insensitive search by title
+//         { tags: { $in: [new RegExp(queryText, 'i')] } } // Search tags array for a matching tag
+//       ]
+//     });
+
+//     res.json(matchingTodos); // Return the matching posts as JSON
+//   } catch (error) {
+//     console.error('Error fetching search results:', error);
+//     res.status(500).send("Error fetching search results.");
+//   }
+// });
+
+app.post("/events/:eventID/delete", ensureAuthenticated, async (req, res) => {
+    try {
+      const eventID = req.params.eventID;
+      const event = await Event.findById(eventID);
+  
+      if (!event) {
+        return res.status(404).send("event not found");
+      }
+  
+      if (event.author !== req.user.username) {
+        return res.status(403).send("You don't have permission to delete this event.");
+      }
+  
+      await Event.findByIdAndDelete(eventID);
+  
+      res.redirect("/calendar"); // Redirect after successful deletion
+    } catch (error) {
+      console.error("Error deleting event:", error);
+      res.status(500).send("Error deleting event.");
     }
-
-    if (todo.author !== req.user.username) {
-      return res.status(403).send("You don't have permission to delete this todo.");
-    }
-
-    await Todo.findByIdAndDelete(todoID);
-
-    res.redirect("/"); // Redirect after successful deletion
-  } catch (error) {
-    console.error("Error deleting todo:", error);
-    res.status(500).send("Error deleting todo.");
-  }
-});
-
-app.get('/search', async (req, res) => {
-  const queryText = req.query.query.trim();
-
-  if (queryText.length < 3) {
-    return res.status(400).send("Query text must be at least 3 characters long.");
-  }
-
-  try {
-    // Use `$or` to search for posts with matching titles or tags
-    const matchingTodos = await Todo.find({
-      $or: [
-        { title: { $regex: queryText, $options: 'i' } }, // Case-insensitive search by title
-        { tags: { $in: [new RegExp(queryText, 'i')] } } // Search tags array for a matching tag
-      ]
-    });
-
-    res.json(matchingTodos); // Return the matching posts as JSON
-  } catch (error) {
-    console.error('Error fetching search results:', error);
-    res.status(500).send("Error fetching search results.");
-  }
-});
-
+  });
 
 
 // Listen on default port 3000

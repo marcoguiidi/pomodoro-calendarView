@@ -22,5 +22,176 @@
     color: #0056b3; /* Change text color slightly */
 }
 
+html {
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    line-height: 1.4;
+    font-weight: 400;
+  }
+  
+  body {
+    background-color: #ccc;
+    margin: 0;
+  }
+  
+  header {
+    height: 10vh;
+    color: gray;
+  }
+  
+  section {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  h1 {
+    text-align: center;
+  }
+  
+  article {
+    flex: 1 1 500px;
+    border: 2px solid red;
+    border-radius: 10px;
+    background-color: white;
+    width: 80%;
+    margin: 1rem;
+    padding: 5px;
+    margin-right: 1vw;
+    margin-left: 1vw;
+  }
+  
+  .calendar {
+    display: grid;
+    grid-template-columns: repeat(7, calc(110% / 7));
+    gap: 0.5px;
+    width: 90%;
+  }
+  
+  .calendar > div {
+    padding: 10px;
+    text-align: center;
+    justify-content: center;
+  }
+  
+  .calendar > div:not(:nth-last-child(-n+7)) {
+    border-bottom: 1px solid rgba(128, 128, 128, 0.278); /* Aggiunge un bordo inferiore alle celle tranne nell'ultima riga */
+  }
+  
+  .month {
+    text-align: center;
+    color: red;
+  }
+  
+  .day {
+    color: red;
+    font-size: 80%;
+  }
+  
+  .header {
+    color: white !important;
+    background-color: red !important;
+    font-size: 80%;
+  }
+  
+  .day button {
+    border: 0;
+    width: fit-content;
+    height: 4.5ch;
+    border-radius: 20%;
+    background-color: transparent;
+    color: red;
+    font-size: 90%;
+  }
+  
+  @media  (min-width: 600px) {
+    .day {
+      color: red;
+      font-size: 100%;
+    }
+  
+    .day button {
+      border: 0;
+      width: 4.5ch;
+      height: 4.5ch;
+      border-radius: 20%;
+      background-color: transparent;
+      color: red;
+      font-size: 100%;
+    }
+  }
+  
+  .day button:hover,
+  .day button:focus {
+    outline: none;
+    background-color: lightblue;
+    color: #ffffff;
+  }
+  
+  .day button:active {
+    background-color: rgb(45, 144, 177);
+    color: #ffffff;
+  }
+  
+  .day button.has-event {
+    border: 2px dashed;
+  }
+  
+  /* Style for when the button is hovered over */
+  .day button.has-event:hover,
+  .day button.has-event:focus {
+    color: #FFFFFF; /* White text for readability */
+  }
+  
+  dialog {
+    border: 2px solid #ff0000; /* Match the calendar border */
+    border-radius: 8px; /* Match the calendar border-radius */
+    padding: 20px; /* Spacing inside the dialog */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle shadow for depth */
+    margin: auto; /* Center the dialog in the page */
+    
+    background-color: #fff; /* Match the calendar background color */
+    min-width: 15vw; /* Minimum width
+    max-width: 75vw; /* Adjust the width */
+    max-height: 80vh;
+  }
+  /* Style for the form within the dialog to align with the calendar's content */
+  dialog form {
+    display: flex;
+    flex-direction: column; /* Stack form elements vertically */
+  }
+  
+  /* Style for the title in the dialog */
+  dialog h2 {
+    color: red; /* Match the calendar text color */
+    margin-top: 0; /* Reduce space above the title */
+  }
+  
+  /* Style for paragraphs and list within the dialog */
+  dialog p, dialog ul {
+    color: #4A4A4A; /* Match the calendar text color */
+    font-size: 95%; /* Slightly smaller text within the dialog */
+  }
+  
+  /* Style for the list of participants */
+  dialog ul {
+    padding-left: 20px; /*Indent the list */
+  } 
+  
+  /* Style for the close button within the dialog */
+  dialog button {
+    align-self: flex-end; /* Position the button to the right */
+    margin-top: 20px; /* Space above the button */
+    padding: 5px 15px; /* Padding inside the button */
+    background-color: #ff0000; /* Button background color to match the calendar theme */
+    color: white; /* Text color for the button */
+    border: none; /* Remove the default border */
+    border-radius: 4px; /* Rounded corners for the button */
+    cursor: pointer; /* Change cursor to pointer on hover */
+  }
+  
+  /* Hover effect for the button */
+  dialog button:hover {
+    background-color: #b30000; /* Darker shade on hover */
+  }
 
 

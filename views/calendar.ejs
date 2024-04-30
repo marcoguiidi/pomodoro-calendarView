@@ -1,0 +1,485 @@
+<%- include('partials/header'); -%>
+
+<!-- <link type="text/css"
+            rel="stylesheet"
+            href ="../public/style.css" /> -->
+<style>
+
+#resultList {
+    position: absolute;
+    top: 100%; /* Aligns directly below the input */
+    left: 0;
+    right: 0;
+    z-index: 1050; /* Keeps it on top of other content */
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 0 0 .25rem .25rem; /* Rounded corners on the bottom */
+    box-shadow: 0 4px 6px rgba(0,0,0,.1); /* Subtle shadow for depth */
+    max-height: 300px; /* Limit the height and make it scrollable */
+    overflow-y: auto;
+}
+
+#searchForm .form-control {
+    border-radius: .25rem .25rem 0 0; /* Rounded corners on the top */
+}
+
+.list-group-item-action:hover {
+    background-color: #f8f9fa; /* Light grey background on hover */
+    color: #0056b3; /* Change text color slightly */
+}
+
+html {
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    line-height: 1.4;
+    font-weight: 400;
+  }
+  
+  body {
+    background-color: #ccc;
+    margin: 0;
+  }
+  
+  header {
+    height: 10vh;
+    color: gray;
+  }
+  
+  section {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  h1 {
+    text-align: center;
+  }
+  
+  article {
+    flex: 1 1 500px;
+    border: 2px solid red;
+    border-radius: 10px;
+    background-color: white;
+    width: 80%;
+    margin: 1rem;
+    padding: 5px;
+    margin-right: 1vw;
+    margin-left: 1vw;
+  }
+  
+  .calendar {
+    display: grid;
+    grid-template-columns: repeat(7, calc(110% / 7));
+    gap: 0.5px;
+    width: 90%;
+  }
+  
+  .calendar > div {
+    padding: 10px;
+    text-align: center;
+    justify-content: center;
+  }
+  
+  .calendar > div:not(:nth-last-child(-n+7)) {
+    border-bottom: 1px solid rgba(128, 128, 128, 0.278); /* Aggiunge un bordo inferiore alle celle tranne nell'ultima riga */
+  }
+  
+  .month {
+    text-align: center;
+    color: red;
+  }
+  
+  .day {
+    color: red;
+    font-size: 80%;
+  }
+  
+  .header {
+    color: white !important;
+    background-color: red !important;
+    font-size: 80%;
+  }
+  
+  .day button {
+    border: 0;
+    width: fit-content;
+    height: 4.5ch;
+    border-radius: 20%;
+    background-color: transparent;
+    color: red;
+    font-size: 90%;
+  }
+  
+  @media  (min-width: 600px) {
+    .day {
+      color: red;
+      font-size: 100%;
+    }
+  
+    .day button {
+      border: 0;
+      width: 4.5ch;
+      height: 4.5ch;
+      border-radius: 20%;
+      background-color: transparent;
+      color: red;
+      font-size: 100%;
+    }
+  }
+  
+  .day button:hover,
+  .day button:focus {
+    outline: none;
+    background-color: lightblue;
+    color: #ffffff;
+  }
+  
+  .day button:active {
+    background-color: rgb(45, 144, 177);
+    color: #ffffff;
+  }
+  
+  .day button.has-event {
+    border: 2px dashed;
+  }
+  
+  /* Style for when the button is hovered over */
+  .day button.has-event:hover,
+  .day button.has-event:focus {
+    color: #FFFFFF; /* White text for readability */
+  }
+  
+  dialog {
+    border: 2px solid #ff0000; /* Match the calendar border */
+    border-radius: 8px; /* Match the calendar border-radius */
+    padding: 20px; /* Spacing inside the dialog */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle shadow for depth */
+    margin: auto; /* Center the dialog in the page */
+    
+    background-color: #fff; /* Match the calendar background color */
+    min-width: 15vw; /* Minimum width
+    max-width: 75vw; /* Adjust the width */
+    max-height: 80vh;
+  }
+  /* Style for the form within the dialog to align with the calendar's content */
+  dialog form {
+    display: flex;
+    flex-direction: column; /* Stack form elements vertically */
+  }
+  
+  /* Style for the title in the dialog */
+  dialog h2 {
+    color: red; /* Match the calendar text color */
+    margin-top: 0; /* Reduce space above the title */
+  }
+  
+  /* Style for paragraphs and list within the dialog */
+  dialog p, dialog ul {
+    color: #4A4A4A; /* Match the calendar text color */
+    font-size: 95%; /* Slightly smaller text within the dialog */
+  }
+  
+  /* Style for the list of participants */
+  dialog ul {
+    padding-left: 20px; /*Indent the list */
+  } 
+  
+  /* Style for the close button within the dialog */
+  dialog button {
+    align-self: flex-end; /* Position the button to the right */
+    margin-top: 20px; /* Space above the button */
+    padding: 5px 15px; /* Padding inside the button */
+    background-color: #ff0000; /* Button background color to match the calendar theme */
+    color: white; /* Text color for the button */
+    border: none; /* Remove the default border */
+    border-radius: 4px; /* Rounded corners for the button */
+    cursor: pointer; /* Change cursor to pointer on hover */
+  }
+  
+  /* Hover effect for the button */
+  dialog button:hover {
+    background-color: #b30000; /* Darker shade on hover */
+  }
+
+
+
+</style>
+
+<header>
+  <h1>Calendar</h1>
+</header>
+
+<section>
+  <dialog id="eventDialog">
+      <form method="dialog">
+        <h2 id="dialogEventTitle"></h2>
+        <p id="dialogEventDate"></p>
+        <p id="dialogEventLocation"></p>
+        <ul id="dialogEventParticipants"></ul>
+        <button value="close">X</button>
+        <button value="delete">🗑️</button>
+      </form>
+  </dialog>
+  <!-- <article>
+      <div style="margin: 20px">
+          <h2>Marzo 2024</h2>
+          <p>Il calendario qui a destra è stato realizzato usando il sistema Grid di CSS. Al contrario, l'allineamento dell'header e dei due main è stato realizzato usando le proprietà Flex.</p>
+          <ul>
+              <li>La pseudo-class <b>:hover</b> consente di modificare dello stile quando si passa il mouse sulle date.</li>
+              <li>La pseudo-class <b>:focus</b> consente di modificare lo stile quando si clicca su un elemento come un input o un bottone.</li>
+              <li>La pseudo-class <b>:active</b> serve per dare feedback all'utente che un elemento ha ricevuto un evento come un click.</li>
+          </ul>
+      </div>
+  </article> -->
+  <article>
+      <h2 class="month">Marzo 2024</h2>
+      <div class="calendar">
+          <div class="header">S</div>
+          <div class="header">M</div>
+          <div class="header">T</div>
+          <div class="header">W</div>
+          <div class="header">T</div>
+          <div class="header">F</div>
+          <div class="header">S</div>
+
+          <div class="day"></div>
+          <div class="day"></div>
+          <div class="day"></div>
+          <div class="day"></div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-01">1</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-02">2</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-03">3</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-04">4</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-05">5</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-06">6</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-07">7</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-08">8</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-09">9</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-10">10</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-11">11</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-12">12</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-13">13</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-14">14</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-15">15</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-16">16</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-17">17</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-18">18</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-19">19</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-20">20</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-21">21</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-22">22</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-23">23</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-24">24</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-25">25</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-26">26</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-27">27</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-28">28</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-29">29</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-30">30</time>
+              </button>
+          </div>
+          <div class="day">
+              <button>
+                  <time datetime="2024-03-31">31</time>
+              </button>
+          </div>
+      </div>
+  </article>
+  <button><a href="/compose">Add Event</a></button>
+</section>
+<!-- <script src="../public/util.js" type="text/javascript" async defer></script> -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {  // When the DOM is ready...
+    const dialog = document.getElementById("eventDialog");
+
+    fetch('../events') // Fetch events
+      .then(response => response.json()) 
+      .then(events => {
+        const dateButtons = document.querySelectorAll('.day button'); // Get all the date buttons
+        console.log(events);
+        
+        dateButtons.forEach(button => {
+          const date = button.querySelector('time').getAttribute('datetime'); // Get the date from the button
+          const event = events.find(event => event.date.split('T')[0] == date);  // Select event based on the date
+          
+          if (event) { // If the event matchsomething
+            button.setAttribute('data-event-id', event._id);
+            const root = document.documentElement;
+            button.classList.add('has-event'); // Add the .has-event class
+            button.style.borderColor = event.color; // Set the border color
+            button.addEventListener('click', function() {
+              
+                document.getElementById('dialogEventTitle').innerHTML = event.description; // Set the title
+                document.getElementById('dialogEventDate').innerHTML = "Date: " + event.date; // Set the date
+                document.getElementById('dialogEventLocation').innerHTML = "Location: " + event.location; // Set the location
+                let parts = document.getElementById('dialogEventParticipants'); // Set the participants
+                parts.innerHTML = "Participants: ";
+                event.participants.forEach(function(participant){ // Loop through the participants
+                    let li = document.createElement('li'); 
+                    li.innerHTML = participant; // Add the participant to the li element
+                    parts.appendChild(li); // Append the participant to the list
+                })
+
+                dialog.showModal(); 
+            });
+          }
+        });
+      })
+      .catch(error => console.error('Error loading events:', error)); // Handle any errors
+
+     
+
+    // Aggiungi l'event listener dopo aver generato il form
+    
+  
+  
+    // Close the dialog when the form is submitted/closed
+    // Clear all components when the form is submitted/closed
+    dialog.querySelector('form').onsubmit = function() {
+        dialog.close();
+    };
+
+    //non funziona delete event listener
+    const deleteButton = document.querySelector('#deleteEventForm button[type="submit"]');
+    if (deleteButton){
+        deleteButton.addEventListener('click', function() {
+            // Ottieni l'ID dell'evento corrente dal modal
+            const eventID = this.getAttribute('data-event-id');
+            
+            // Ottieni l'ID dell'utente corrente
+            
+            // Costruisci l'URL con i parametri dell'utente e dell'evento
+            const deleteURL = `/events/${eventID}/delete`;
+            
+            // Modifica l'attributo action del form con l'URL corretto
+            const deleteForm = document.getElementById('deleteEventForm');
+            deleteForm.action = deleteURL;
+
+            // Sottometti il form
+            deleteForm.submit();
+        })
+    };
+  });
+
+
+</script>
+
+
+<%- include('partials/footer'); -%>
