@@ -205,7 +205,7 @@ html {
 </style>
 
 <header>
-  <h1>Calendar</h1>
+    <h1 >Calendar App</h1>
 </header>
 
 <section>
@@ -231,7 +231,8 @@ html {
       </div>
   </article> -->
   <article>
-      <h2 class="month">Marzo 2024</h2>
+      <h2 class="month" id="currentMonth"></h2>
+      <button id="prevMonthButton">&lt;</button><button id="nextMonthButton">&gt;</button>
       <div class="calendar">
           <div class="header">S</div>
           <div class="header">M</div>
@@ -241,165 +242,133 @@ html {
           <div class="header">F</div>
           <div class="header">S</div>
 
-          <div class="day"></div>
-          <div class="day"></div>
-          <div class="day"></div>
-          <div class="day"></div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-01">1</time>
-              </button>
+            <button></button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-02">2</time>
-              </button>
+            <button></button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-03">3</time>
-              </button>
+            <button></button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-04">4</time>
-              </button>
+            <button></button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-05">5</time>
-              </button>
+              <button></button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-06">6</time>
-              </button>
+              <button></button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-07">7</time>
-              </button>
+              <button></button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-08">8</time>
-              </button>
+              <button></button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-09">9</time>
-              </button>
+              <button></button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-10">10</time>
-              </button>
+              <button></button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-11">11</time>
-              </button>
+              <button></button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-12">12</time>
-              </button>
+              <button></button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-13">13</time>
-              </button>
+              <button></button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-14">14</time>
-              </button>
+              <button></button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-15">15</time>
-              </button>
+              <button></button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-16">16</time>
-              </button>
+              <button></button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-17">17</time>
-              </button>
+              <button></button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-18">18</time>
-              </button>
+              <button> </button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-19">19</time>
-              </button>
+              <button></button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-20">20</time>
-              </button>
+              <button></button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-21">21</time>
-              </button>
+              <button></button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-22">22</time>
-              </button>
+              <button></button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-23">23</time>
-              </button>
+              <button></button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-24">24</time>
-              </button>
+              <button></button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-25">25</time>
-              </button>
+              <button> </button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-26">26</time>
-              </button>
+              <button></button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-27">27</time>
-              </button>
+              <button></button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-28">28</time>
-              </button>
+              <button></button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-29">29</time>
-              </button>
+              <button></button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-30">30</time>
-              </button>
+              <button></button>
           </div>
           <div class="day">
-              <button>
-                  <time datetime="2024-03-31">31</time>
-              </button>
+              <button></button>
           </div>
+          <div class="day">
+              <button></button>
+          </div>
+          <div class="day">
+              <button></button>
+          </div>
+          <div class="day">
+              <button></button>
+          </div>
+          <div class="day">
+              <button></button>
+          </div>
+        
+        <div class="day" id="sixth">
+            <button></button>
+        </div>
+        <div class="day" id="sixth">
+            <button></button>
+        </div>
+        <div class="day" id="sixth">
+            <button></button>
+        </div>
+        <div class="day" id="sixth">
+            <button></button>
+        </div>
+        <div class="day" id="sixth">
+            <button></button>
+        </div>
+        <div class="day" id="sixth">
+            <button></button>
+        </div>
+        <div class="day" id="sixth">
+            <button></button>
+        </div>
       </div>
   </article>
   <button><a href="/compose">Add Event</a></button>
@@ -407,77 +376,159 @@ html {
 <!-- <script src="../public/util.js" type="text/javascript" async defer></script> -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {  // When the DOM is ready...
-    const dialog = document.getElementById("eventDialog");
 
-    fetch('../events') // Fetch events
-      .then(response => response.json()) 
-      .then(events => {
-        const dateButtons = document.querySelectorAll('.day button'); // Get all the date buttons
-        console.log(events);
-        
-        dateButtons.forEach(button => {
-          const date = button.querySelector('time').getAttribute('datetime'); // Get the date from the button
-          const event = events.find(event => event.date.split('T')[0] == date);  // Select event based on the date
-          
-          if (event) { // If the event matchsomething
-            button.setAttribute('data-event-id', event._id);
-            const root = document.documentElement;
-            button.classList.add('has-event'); // Add the .has-event class
-            button.style.borderColor = event.color; // Set the border color
-            button.addEventListener('click', function() {
-              
-                document.getElementById('dialogEventTitle').innerHTML = event.description; // Set the title
-                document.getElementById('dialogEventDate').innerHTML = "Date: " + event.date; // Set the date
-                document.getElementById('dialogEventLocation').innerHTML = "Location: " + event.location; // Set the location
-                let parts = document.getElementById('dialogEventParticipants'); // Set the participants
-                parts.innerHTML = "Participants: ";
-                event.participants.forEach(function(participant){ // Loop through the participants
-                    let li = document.createElement('li'); 
-                    li.innerHTML = participant; // Add the participant to the li element
-                    parts.appendChild(li); // Append the participant to the list
-                })
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth(); // Nota: i mesi in JavaScript sono indicizzati da 0 a 11
 
-                dialog.showModal(); 
-            });
-          }
-        });
-      })
-      .catch(error => console.error('Error loading events:', error)); // Handle any errors
+    // Funzione per ottenere il nome del mese dato il suo indice
+    function getMonthName(monthIndex) {
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        return months[monthIndex];
+    }
 
-     
+    // Funzione per generare i giorni del calendario per un dato mese e anno
+    function generateCalendarDays(year, month) {
+        const firstDayOfMonth = new Date(year, month, 1).getDay(); // Ottieni il giorno della settimana del primo giorno del mese
+        const numDays = getDaysInMonth(year, month); // Ottieni il numero totale di giorni nel mese
+        let days = [];
 
-    // Aggiungi l'event listener dopo aver generato il form
+        // Aggiungi giorni vuoti prima del primo giorno del mese per allineare correttamente il calendario
+        for (let i = 0; i < firstDayOfMonth; i++) {
+            days.push(''); // Aggiungi un elemento vuoto per ogni giorno vuoto nella settimana prima del primo giorno del mese
+        }
+
+        // Aggiungi i giorni del mese al calendario
+        for (let i = 1; i <= numDays; i++) {
+            days.push(i); // Aggiungi il giorno corrente al calendario
+        }
+
+        for (let i = 0; i < 20; i++) {
+            days.push(''); // Aggiungo 20 vuoti perchè non ho vogglia di fare il calcolo dei giorni vuoti rimanenti
+        }
+
+        return days;
+    }
+
+    function getDaysInMonth(year, month) {
+        return new Date(year, month + 1, 0).getDate(); // Ottieni il numero di giorni del mese
+    }
+
     
-  
-  
-    // Close the dialog when the form is submitted/closed
-    // Clear all components when the form is submitted/closed
-    dialog.querySelector('form').onsubmit = function() {
-        dialog.close();
-    };
+
+    // Aggiungere un event listener al pulsante del mese precedente
+    document.getElementById('prevMonthButton').addEventListener('click', function() {
+        currentMonth--;
+        if (currentMonth < 0) {
+            currentMonth = 11;
+            currentYear--;
+        }
+        updateCalendar();
+    });
+
+    // Aggiungere un event listener al pulsante del mese successivo
+    document.getElementById('nextMonthButton').addEventListener('click', function() {
+        currentMonth++;
+        if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+        }
+        updateCalendar();
+    });
+    updateCalendar();
+
+    // Funzione per aggiornare il calendario con il mese e l'anno correnti
+    function updateCalendar() {
+        const calendarDays = generateCalendarDays(currentYear, currentMonth);
+        const dayElements = document.querySelectorAll('.day button');
+        const currentMonthElement = document.getElementById('currentMonth');
+
+        // Popolare dinamicamente i giorni del calendario nel markup HTML e rende visibili solo i button che hanno una data associata
+        dayElements.forEach((button, index) => {
+            if (index < 42 && calendarDays[index] != '') {
+                let month = (currentMonth + 1).toString().padStart(2, '0');
+                let day = calendarDays[index].toString().padStart(2, '0');
+                button.innerHTML = `<time datetime="${currentYear}-${parseInt(month, 10)}-${parseInt(day, 10)}">${calendarDays[index]}</time>`;
+                button.style.visibility = 'visible';
+            }else if (calendarDays[index] == '') {
+                //nascondo dalla visualizzazione in pulsanti inutili
+                button.innerHTML = '';
+                button.style.visibility = 'hidden';
+            }});
+
+        
+
+        // Aggiornare il nome del mese nell'header
+        currentMonthElement.textContent = `${getMonthName(currentMonth)} ${currentYear}`;
+    
+        const dialog = document.getElementById("eventDialog");
+
+        fetch('../events') // Fetch events
+        .then(response => response.json()) 
+        .then(events => {
+            const dateButtons = document.querySelectorAll('.day button'); // Get all the date buttons
+            console.log(events);
+            
+            dateButtons.forEach(button => {
+
+                if(button.textContent != ''){
+                    const date = button.querySelector('time').getAttribute('datetime'); // Get the date from the button
+                    
+                    const event = events.find(event => event.date.split('T')[0] == date);  // Select event based on the date
+                    
+                    if (event) { // If the event matchsomething
+                        const root = document.documentElement;
+                        button.classList.add('has-event'); // Add the .has-event class
+                        button.style.borderColor = event.color; // Set the border color
+                        button.addEventListener('click', function() {
+                        
+                            document.getElementById('dialogEventTitle').innerHTML = event.description; // Set the title
+                            document.getElementById('dialogEventDate').innerHTML = "Date: " + event.date; // Set the date
+                            document.getElementById('dialogEventLocation').innerHTML = "Location: " + event.location; // Set the location
+                            let parts = document.getElementById('dialogEventParticipants'); // Set the participants
+                            parts.innerHTML = "Participants: ";
+                            event.participants.forEach(function(participant){ // Loop through the participants
+                                let li = document.createElement('li'); 
+                                li.innerHTML = participant; // Add the participant to the li element
+                                parts.appendChild(li); // Append the participant to the list
+                            })
+
+                            dialog.showModal(); 
+                        });
+                    }
+                }
+                
+            });
+        })
+        .catch(error => console.error('Error loading events:', error)); // Handle any errors
+    
+
+        // Clear all components when the form is submitted/closed
+        dialog.querySelector('form').onsubmit = function() {
+            dialog.close();
+        };
+    }
 
     //non funziona delete event listener
-    const deleteButton = document.querySelector('#deleteEventForm button[type="submit"]');
-    if (deleteButton){
-        deleteButton.addEventListener('click', function() {
-            // Ottieni l'ID dell'evento corrente dal modal
-            const eventID = this.getAttribute('data-event-id');
+    // const deleteButton = document.querySelector('#deleteEventForm button[type="submit"]');
+    // if (deleteButton){
+    //     deleteButton.addEventListener('click', function() {
+    //         // Ottieni l'ID dell'evento corrente dal modal
+    //         const eventID = this.getAttribute('data-event-id');
             
-            // Ottieni l'ID dell'utente corrente
+    //         // Ottieni l'ID dell'utente corrente
             
-            // Costruisci l'URL con i parametri dell'utente e dell'evento
-            const deleteURL = `/events/${eventID}/delete`;
+    //         // Costruisci l'URL con i parametri dell'utente e dell'evento
+    //         const deleteURL = `/events/${eventID}/delete`;
             
-            // Modifica l'attributo action del form con l'URL corretto
-            const deleteForm = document.getElementById('deleteEventForm');
-            deleteForm.action = deleteURL;
+    //         // Modifica l'attributo action del form con l'URL corretto
+    //         const deleteForm = document.getElementById('deleteEventForm');
+    //         deleteForm.action = deleteURL;
 
-            // Sottometti il form
-            deleteForm.submit();
-        })
-    };
+    //         // Sottometti il form
+    //         deleteForm.submit();
+    //     })
+    // };
   });
-
 
 </script>
 
