@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study Timer</title>
+<link type="text/css" rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <audio id="endAudio" src="audio/timer_sound.mp3"></audio>
+  <audio id="inAudio" src="audio/onceInParis.mp3" loop></audio>
+  <audio id="trumpets" src="audio/trumpets.mp3"></audio>
+
+  <h1 id="task"></h1>
+
+  <div class="hider">
+      <form id="studyForm" >
+        <input type="number" id="studyTime"  name="studyTime" min="1" placeholder="study" required>
+        <input type="number" id="pauseTime"  name="pauseTime" min="1" placeholder="pause">
+        <input type="number" id="times"  name="times" min="1" placeholder="times">
+        <br>
+        <button type="submit" id="start">▶</button>
+        <br>
+        <button type="button" id="music">♫</button>
+      </form>
+  </div>
+    
+  <button id="stop" onclick="window.location.reload();"><strong>X</strong></button>
+  <!--
+    pulsante per stoppare e terminare il nostro timer
+    funziona come un refresh della pagina per azzerare
+  -->
+  
+  <div id="clock">
+    <div class="timer" id="timerDisplay">00:00</div>
+  </div>
+
+  <div id="pause">
+    <div  id="pauseTimer">00:00</div>
+  </div>
+  <script src="index.js" charset="utf-8"></script>
+  
+  </body>
+</html>
