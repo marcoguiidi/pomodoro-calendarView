@@ -214,9 +214,10 @@ html {
         <h2 id="dialogEventTitle"></h2>
         <p id="dialogEventDate"></p>
         <p id="dialogEventLocation"></p>
+        <p id="dialogEventID" style="visibility:hidden"></p>
         <ul id="dialogEventParticipants"></ul>
         <button value="close">X</button>
-        <!-- <button value="delete">🗑️</button>     <!-- non funziona -->
+        <!-- <button id="delete-button">🗑️</button>     <!-- non funziona -->
       </form>
   </dialog>
   <!-- <article>
@@ -463,10 +464,10 @@ html {
         const dialog = document.getElementById("eventDialog");
 
         function CB(isevent) {
-
             document.getElementById('dialogEventTitle').innerHTML = isevent.description; // Set the title
             document.getElementById('dialogEventDate').innerHTML = "Date: " + isevent.date.split('T')[0]; // Set the date
             document.getElementById('dialogEventLocation').innerHTML = "Location: " + isevent.location; // Set the location
+            document.getElementById('dialogEventID').innerHTML = isevent._id;
             let parts = document.getElementById('dialogEventParticipants'); // Set the participants
             parts.innerHTML = "Participants: ";
             isevent.participants.forEach(function(participant){ // Loop through the participants
@@ -492,6 +493,8 @@ html {
                     const root = document.documentElement;
                     button.classList.add('has-event');
                     button.style.borderColor = isevent.color;
+
+
 
                     // Definiamo una chiusura per memorizzare l'event listener corrente
                     const actualEventHandler = (function(isevent) {
@@ -530,25 +533,24 @@ html {
     }
 
     //non funziona delete event listener
-    // const deleteButton = document.querySelector('#deleteEventForm button[type="submit"]');
-    // if (deleteButton){
-    //     deleteButton.addEventListener('click', function() {
-    //         // Ottieni l'ID dell'evento corrente dal modal
-    //         const eventID = this.getAttribute('data-event-id');
-            
-    //         // Ottieni l'ID dell'utente corrente
-            
-    //         // Costruisci l'URL con i parametri dell'utente e dell'evento
-    //         const deleteURL = `/events/${eventID}/delete`;
-            
-    //         // Modifica l'attributo action del form con l'URL corretto
-    //         const deleteForm = document.getElementById('deleteEventForm');
-    //         deleteForm.action = deleteURL;
+    // const deleteButtons = document.querySelectorAll('#delete-button');
 
-    //         // Sottometti il form
-    //         deleteForm.submit();
-    //     })
-    // };
+    // // Aggiungi un event listener a ciascun pulsante di eliminazione
+    // deleteButtons.forEach(deleteButton => {
+    //     deleteButton.addEventListener('click', function() {
+    //         // Ottieni l'ID dell'evento dal data attribute
+    //         const eventID = document.getElementById('dialogEventID').textContent;
+
+    //         // Ottieni l'ID dell'utente corrente
+    //         const userID = "<%= username %>"; // Sostituisci con la logica per ottenere l'ID dell'utente
+
+    //         // Costruisci l'URL con i parametri dell'utente e dell'evento
+    //         const deleteURL = `/users/${userID}/events/delete/${eventID}`;
+
+    //         // Reindirizza l'utente alla pagina di eliminazione
+    //         window.location.href = deleteURL;
+    //     });
+    // });
   });
 
 </script>

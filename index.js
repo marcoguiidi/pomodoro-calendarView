@@ -289,7 +289,7 @@ const newEvent = new Event({
 });
 
 app.get("/calendar", ensureAuthenticated, (req, res) =>  {
-  res.render("calendar");
+  res.render("calendar", {username: User.findById(req.user._id)});
 });
 
 // app.get("/users/:username/calendar", async (req, res) => {
@@ -374,7 +374,7 @@ app.get("/calendar", ensureAuthenticated, (req, res) =>  {
 //   }
 // });
 
-app.post("/events/:eventID/delete", ensureAuthenticated, async (req, res) => {
+app.post("users/:username/events//delete/:eventID", ensureAuthenticated, async (req, res) => {
     try {
       const eventID = req.params.eventID;
       const event = await Event.findById(eventID);
