@@ -216,7 +216,7 @@ html {
         <p id="dialogEventLocation"></p>
         <ul id="dialogEventParticipants"></ul>
         <button value="close">X</button>
-        <button value="delete">🗑️</button>
+        <!-- <button value="delete">🗑️</button>     <!-- non funziona -->
       </form>
   </dialog>
   <!-- <article>
@@ -445,9 +445,9 @@ html {
         // Popolare dinamicamente i giorni del calendario nel markup HTML e rende visibili solo i button che hanno una data associata
         dayElements.forEach((button, index) => {
             if (index < 42 && calendarDays[index] != '') {
-                let month = (currentMonth + 1).toString().padStart(2, '0');
-                let day = calendarDays[index].toString().padStart(2, '0');
-                button.innerHTML = `<time datetime="${currentYear}-${parseInt(month, 10)}-${parseInt(day, 10)}">${calendarDays[index]}</time>`;
+                let month = currentMonth+1 < 10 ? `0${currentMonth+1}`: currentMonth + 1;
+                let day = calendarDays[index] < 10 ? `0${calendarDays[index]}`: calendarDays[index];
+                button.innerHTML = `<time datetime="${currentYear}-${month}-${day}">${calendarDays[index]}</time>`;
                 button.style.visibility = 'visible';
             }else if (calendarDays[index] == '') {
                 //nascondo dalla visualizzazione in pulsanti inutili
@@ -462,42 +462,63 @@ html {
     
         const dialog = document.getElementById("eventDialog");
 
-        fetch('../events') // Fetch events
+        function CB(isevent) {
+
+            document.getElementById('dialogEventTitle').innerHTML = isevent.description; // Set the title
+            document.getElementById('dialogEventDate').innerHTML = "Date: " + isevent.date.split('T')[0]; // Set the date
+            document.getElementById('dialogEventLocation').innerHTML = "Location: " + isevent.location; // Set the location
+            let parts = document.getElementById('dialogEventParticipants'); // Set the participants
+            parts.innerHTML = "Participants: ";
+            isevent.participants.forEach(function(participant){ // Loop through the participants
+                let li = document.createElement('li'); 
+                li.innerHTML = participant; // Add the participant to the li element
+                parts.appendChild(li); // Append the participant to the list
+            })
+
+            dialog.showModal(); 
+        }
+
+        fetch('/events') // Fetch events
         .then(response => response.json()) 
         .then(events => {
             const dateButtons = document.querySelectorAll('.day button'); // Get all the date buttons
-            console.log(events);
-            
+
             dateButtons.forEach(button => {
+            if(button.textContent != ''){
+                const date = button.querySelector('time').getAttribute('datetime');
+                const isevent = events.find(isevent => isevent.date && isevent.date.split('T')[0] == date);
 
-                if(button.textContent != ''){
-                    const date = button.querySelector('time').getAttribute('datetime'); // Get the date from the button
-                    
-                    const event = events.find(event => event.date.split('T')[0] == date);  // Select event based on the date
-                    
-                    if (event) { // If the event matchsomething
-                        const root = document.documentElement;
-                        button.classList.add('has-event'); // Add the .has-event class
-                        button.style.borderColor = event.color; // Set the border color
-                        button.addEventListener('click', function() {
-                        
-                            document.getElementById('dialogEventTitle').innerHTML = event.description; // Set the title
-                            document.getElementById('dialogEventDate').innerHTML = "Date: " + event.date; // Set the date
-                            document.getElementById('dialogEventLocation').innerHTML = "Location: " + event.location; // Set the location
-                            let parts = document.getElementById('dialogEventParticipants'); // Set the participants
-                            parts.innerHTML = "Participants: ";
-                            event.participants.forEach(function(participant){ // Loop through the participants
-                                let li = document.createElement('li'); 
-                                li.innerHTML = participant; // Add the participant to the li element
-                                parts.appendChild(li); // Append the participant to the list
-                            })
+                if (isevent) {
+                    const root = document.documentElement;
+                    button.classList.add('has-event');
+                    button.style.borderColor = isevent.color;
 
-                            dialog.showModal(); 
-                        });
+                    // Definiamo una chiusura per memorizzare l'event listener corrente
+                    const actualEventHandler = (function(isevent) {
+                        return function(event) {
+                            CB(isevent);
+                        };
+                    })(isevent);
+
+                    // Rimuoviamo l'event listener precedente se esiste
+                    if (button.eventListener) {
+                        button.removeEventListener('click', button.eventListener);
                     }
-                }
-                
-            });
+                    button.addEventListener('click', actualEventHandler);
+                    // Memorizziamo l'event listener associato al pulsante
+                    button.eventListener = actualEventHandler;
+                } else {
+                    // Rimuoviamo l'event listener se il pulsante non ha un evento associato
+                    if (button.eventListener) {
+                        button.removeEventListener('click', button.eventListener);
+                        delete button.eventListener; // Rimuoviamo il riferimento all'event listener dal pulsante
+                    }
+                    button.classList.remove('has-event');
+                    button.style.borderColor = 'transparent';
+                }       
+            }
+        });
+
         })
         .catch(error => console.error('Error loading events:', error)); // Handle any errors
     
