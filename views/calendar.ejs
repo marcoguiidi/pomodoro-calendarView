@@ -200,6 +200,32 @@ html {
     background-color: #b30000; /* Darker shade on hover */
   }
 
+  #addButton {
+    /* display: flex;  */
+    position: center; 
+    background-color: red;
+    color: white;
+    border: solid 1px white;
+    border-radius: 10px; 
+  }
+
+  #addButton:hover,
+  #addButton:focus {
+    outline: none;
+    background-color: rgb(254, 84, 84);
+    color: #ffffff;
+  }
+
+  #addLink{
+    color: white; 
+    text-decoration: none !important;
+  }
+
+  .changeMonth{
+    border: solid 0px;
+    background-color: transparent !important;
+    color: red !important;
+  }
 
 
 </style>
@@ -233,7 +259,8 @@ html {
   </article> -->
   <article>
       <h2 class="month" id="currentMonth"></h2>
-      <button id="prevMonthButton">&lt;</button><button id="nextMonthButton">&gt;</button>
+      <button id="prevMonthButton" class="changeMonth" >&lt;</button>
+      <button id="nextMonthButton" class="changeMonth" >&gt;</button>
       <div class="calendar">
           <div class="header">S</div>
           <div class="header">M</div>
@@ -372,7 +399,9 @@ html {
         </div>
       </div>
   </article>
-  <button><a href="/compose">Add Event</a></button>
+  <div>
+    <button id="addButton"><a id="addLink" href="/compose">Add Event</a></button>
+  </div>
 </section>
 <!-- <script src="../public/util.js" type="text/javascript" async defer></script> -->
 <script>
