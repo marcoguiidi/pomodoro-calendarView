@@ -21,6 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/scripts", express.static(path.join(__dirname, "node_modules/markdown/lib")));
 app.use('/css', express.static(global.rootDir + '/public/css'));
+app.use('/js', express.static(global.rootDir + '/public/js'));
 
 app.use(
   expressSession({
