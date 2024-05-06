@@ -13,6 +13,15 @@ const markdown = require("markdown").markdown;
 
 const stripHtmlTags = (text) => text.replace(/<\/?[^>]+(>|$)/g, ""); // Function to strip HTML tags
 
+let debug = true; // Imposta questa variabile su true per attivare i log, false per disattivarli
+
+// Funzione per eseguire i log condizionalmente
+function debugLog(...messages) {
+  if (debug) {
+    console.log(...messages);
+  }
+}
+
 // Middleware setup
 app.use(cors());
 app.set("view engine", "ejs"); // Set EJS as the view engine
@@ -396,7 +405,157 @@ app.post("users/:username/events//delete/:eventID", ensureAuthenticated, async (
       console.error("Error deleting event:", error);
       res.status(500).send("Error deleting event.");
     }
+});
+
+// Route per la pagina del timer Pomodoro
+app.get('/pomodoro', ensureAuthenticated, (req, res) => {
+  res.render('pomodoro', {
+    title: 'Pomodoro Timer', // Titolo della pagina
+    user: req.user // Dati utente per personalizzare la vista
   });
+  debugLog('Pagina del timer Pomodoro servita.');
+});
+
+// Schema per la sessione di Pomodoro usando Mongoose
+const pomodoroSessionSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  durationMinutes: { type: Number, default: 1 }, // Durata predefinita della sessione
+  breakMinutes: { type: Number, default: 1 }, // Durata predefinita della pausa breve
+  longBreakMinutes: { type: Number, default: 2 }, // Durata predefinita della pausa lunga
+  cycle: { type: Number, default: 1 }, // Numero di cicli completati
+  startTime: Date, // Ora di inizio sessione
+  pausedTime: Date, // Ora di inizio pausa
+  intervalTime: Date, // Ora di inizio intervallo
+  totalPausedDuration: { type: Number, default: 0 }, // Durata totale delle pause
+  maxPausedDuration: { type: Number, default: 1800 }, // Durata massima della pausa in secondi
+  endTime: Date, // Ora di fine sessione
+  completed: { type: Boolean, default: false }, // Stato di completamento della sessione
+  effectiveStudyTime: Number // Tempo effettivo di studio
+});
+
+// Modello Mongoose basato sullo schema definito
+const PomodoroSession = mongoose.model('PomodoroSession', pomodoroSessionSchema);
+
+// Route per avviare una nuova sessione di Pomodoro
+app.post('/api/pomodoro/start', ensureAuthenticated, async (req, res) => {
+  try {
+    // Trova l'ultima sessione completata per l'utente
+    const lastCompletedSession = await PomodoroSession.findOne({
+      userId: req.user._id,
+      completed: true
+    }).sort({ endTime: -1 });
+
+    debugLog('Ultima sessione completata trovata:', lastCompletedSession);
+    const now = new Date();
+    let cycle = 1; // Imposta il valore predefinito del ciclo
+
+    // Se la sessione precedente è stata completata da meno di maxPausedDuration, usa lo stesso ciclo
+    if (lastCompletedSession && lastCompletedSession.endTime) {
+      const timeSinceLastSessionEnd = (now - lastCompletedSession.endTime) / 1000 / 60;
+      if (timeSinceLastSessionEnd < lastCompletedSession.maxPausedDuration) {
+        cycle = lastCompletedSession.cycle;
+      }
+    }
+
+    // Crea una nuova sessione con il ciclo appropriato
+    const session = new PomodoroSession({
+      userId: req.user._id,
+      cycle: cycle,
+      startTime: now,
+      completed: false
+    });
+
+    await session.save();
+    res.status(201).send(session);
+    debugLog('Nuova sessione di Pomodoro avviata:', session);
+  } catch (error) {
+    console.error('Errore durante l\'avvio di una nuova sessione:', error);
+    res.status(400).send(error);
+  }
+});
+
+// Route per gestire le azioni sulla sessione (pausa, ripresa, stop)
+app.patch('/api/pomodoro/:id/:action', ensureAuthenticated, async (req, res) => {
+  const { action, id: sessionId } = req.params;
+  const { state } = req.body;
+
+  debugLog('Azione:', action, 'Stato:', state, 'ID Sessione:', sessionId);
+
+  try {
+    const session = await PomodoroSession.findById(sessionId);
+    if (!session) {
+      return res.status(404).send('Sessione non trovata');
+    }
+
+    const now = new Date();
+
+    // Gestisce l'azione sulla sessione in base al parametro 'action'
+    switch (action) {
+      case 'start':
+        if (session.startTime) {
+          return res.status(400).send('La sessione è già iniziata');
+        }
+        session.startTime = now;
+        break;
+      case 'stop':
+        session.endTime = now;
+        const totalTime = (now - session.startTime) / 1000;
+        session.effectiveStudyTime = totalTime - session.totalPausedDuration;
+        if (state === 'completed') {
+          session.cycle += 1;
+          session.completed = true;
+        } else if (state === 'interval') {
+          session.intervalTime = now;
+        }
+        debugLog('Sessione fermata con stato:', state);
+        break;
+      case 'pause':
+        if (!session.pausedTime) {
+          session.pausedTime = now;
+        }
+        break;
+      case 'resume':
+        if (session.pausedTime) {
+          const pausedDuration = (now - session.pausedTime) / 1000;
+          session.totalPausedDuration += pausedDuration;
+          session.pausedTime = null;
+        }
+        debugLog('Sessione ripresa.');
+        break;
+      default:
+        return res.status(400).send('Azione non valida');
+    }
+
+    await session.save();
+    res.status(200).send(session);
+  } catch (error) {
+    console.error('Errore durante la gestione della sessione:', error);
+    res.status(500).send(error);
+  }
+});
+
+// Route per recuperare l'ultima sessione attiva dell'utente
+app.get('/api/pomodoro/last', ensureAuthenticated, async (req, res) => {
+  debugLog('Inizio ricerca ultima sessione per l\'utente:', req.user._id);
+
+  try {
+    const lastSession = await PomodoroSession.findOne({
+      userId: req.user._id,
+      completed: false
+    }).sort({ startTime: -1 });
+
+    if (!lastSession) {
+      debugLog('Nessuna sessione attiva trovata');
+      return res.status(404).send({ message: 'Nessuna sessione attiva trovata' });
+    }
+
+    debugLog('Sessione attiva trovata:', lastSession);
+    res.status(200).send(lastSession);
+  } catch (error) {
+    console.error('Errore durante il recupero dell\'ultima sessione:', error);
+    res.status(500).send(error);
+  }
+});
 
 
 // Listen on default port 3000
