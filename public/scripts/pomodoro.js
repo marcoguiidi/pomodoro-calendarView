@@ -55,10 +55,9 @@ function initializeTimer(data) {
   const startTime = new Date(data.startTime);
   const elapsed = (now.getTime() - startTime.getTime()) / 1000; // Tempo trascorso dall'inizio della sessione
 
-  let pausedDuration = 0; 
   let sessionState;
 
-  if (data.pausedTime && pausedDuration <= data.maxPauseDuration) {
+  if (data.pausedTime) {
     sessionState = 'pausa';
   } else if (!data.completed) {
     if (data.intervalTime) {
@@ -207,7 +206,7 @@ function startNewSession() {
   })
   .then(data => {
     debugLog('Dati della nuova sessione ricevuti:', data);
-    if (!data || !data.durationMinutes) {
+    if (!data) {
       console.error('Dati della sessione non validi:', data);
       throw new Error('Dati della sessione ricevuti non validi');
     }
@@ -218,7 +217,7 @@ function startNewSession() {
   })
   .catch(error => {
     console.error('Errore nell\'avvio della nuova sessione:', error);
-    duration = 1500; // Imposta una durata predefinita in caso di errore
+    duration = 0; // Imposta una durata predefinita in caso di errore
     updateTimerDisplay();
   });
 }
