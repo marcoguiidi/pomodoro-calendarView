@@ -279,13 +279,13 @@ const newEvent = new Event({
 
 });
 
-  try {
-    await newEvent.save(); // Save to the database
-    res.redirect("/calendar"); // Redirect after successful save
-  } catch (error) {
-    console.error("Error saving:", error); // Handle error
-    res.status(500).send("Error saving."); // Respond with a server error
-  }
+try {
+  await newEvent.save(); // Save to the database
+  res.redirect("/calendar"); // Redirect after successful save
+} catch (error) {
+  console.error("Error saving:", error); // Handle error
+  res.status(500).send("Error saving."); // Respond with a server error
+}
 });
 
 app.get("/calendar", ensureAuthenticated, (req, res) =>  {
