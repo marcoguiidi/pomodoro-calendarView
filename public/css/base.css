@@ -6,3 +6,7 @@ body{
 .navbar{
     background-color: transparent !important;
 }
+
+.home-container{
+    text-align: center;
+}
