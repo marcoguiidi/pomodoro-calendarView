@@ -1,0 +1,82 @@
+<%- include('partials/header'); -%>
+
+<link type="text/css"
+            rel="stylesheet"
+            href ="css/calendar.css" />
+
+
+<header>
+    <h1 >Calendar App</h1>
+</header>
+
+<button id="view-button"><a id="addLink" href="/calendar">Monthly</a></button>
+
+<section>
+  <dialog id="event-dialog">
+      <form method="dialog" id="dialog-form">
+        <h2 id="dialogEventTitle"></h2>
+        <p id="dialogEventDate"></p>
+        <p id="dialogEventLocation"></p>
+        <p id="dialogEventID" style="visibility:hidden"></p>
+        <ul id="dialogEventParticipants"></ul>
+        <button value="close">X</button>
+        <!-- <button id="delete-button">🗑️</button>     <!-- non funziona -->
+      </form>
+  </dialog>
+  <!-- <article>
+      <div style="margin: 20px">
+          <h2>Marzo 2024</h2>
+          <p>Il calendario qui a destra è stato realizzato usando il sistema Grid di CSS. Al contrario, l'allineamento dell'header e dei due main è stato realizzato usando le proprietà Flex.</p>
+          <ul>
+              <li>La pseudo-class <b>:hover</b> consente di modificare dello stile quando si passa il mouse sulle date.</li>
+              <li>La pseudo-class <b>:focus</b> consente di modificare lo stile quando si clicca su un elemento come un input o un bottone.</li>
+              <li>La pseudo-class <b>:active</b> serve per dare feedback all'utente che un elemento ha ricevuto un evento come un click.</li>
+          </ul>
+      </div>
+  </article> -->
+  <article>
+      <h2 class="month" id="currentMonth"></h2>
+      <button id="prevWeekButton" class="changeMonth" >&lt;</button>
+      <button id="nextWeekButton" class="changeMonth" >&gt;</button>
+      <div class="calendar">
+          <div class="header">S</div>
+          <div class="header">M</div>
+          <div class="header">T</div>
+          <div class="header">W</div>
+          <div class="header">T</div>
+          <div class="header">F</div>
+          <div class="header">S</div>
+
+          <div class="day">
+            <button></button>
+          </div>
+          <div class="day">
+            <button></button>
+          </div>
+          <div class="day">
+            <button></button>
+          </div>
+          <div class="day">
+            <button></button>
+          </div>
+          <div class="day">
+              <button></button>
+          </div>
+          <div class="day">
+              <button></button>
+          </div>
+          <div class="day">
+              <button></button>
+          </div>
+        
+      </div>
+  </article>
+  <div>
+    <button id="addButton"><a id="addLink" href="/compose">Add Event</a></button>
+  </div>
+</section>
+<script src="scripts/weekCalendar.js" type="text/javascript"></script>
+
+
+
+<%- include('partials/footer'); -%>

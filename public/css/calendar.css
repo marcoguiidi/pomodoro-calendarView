@@ -224,5 +224,17 @@ dialog button:hover {
   background-color: transparent !important;
 }
 
+#view-button{
+  position: center; 
+  background-color: red;
+  color: white;
+  border: solid 1px white;
+  border-radius: 10px; 
+}
 
-
+#view-button:hover,
+#view-button:focus {
+  outline: none;
+  background-color: rgb(254, 84, 84);
+  color: #ffffff;
+}

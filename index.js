@@ -238,7 +238,10 @@ app.get("/events", ensureAuthenticated, async (req, res) => {
     const userId = req.user._id;
     const user = await User.findById(userId);
 
-    const data = await Event.find({ author: user.username });
+    const data = await Event.find({ 
+      author: user.username || 
+      participants.contains(user.username) // !! non funziona !!
+    });
 
     const eventData = data.map(event => ({
       description: event.description,
@@ -303,6 +306,9 @@ app.get("/calendar", ensureAuthenticated, (req, res) =>  {
   res.render("calendar", {username: User.findById(req.user._id)});
 });
 
+app.get("/weekCalendar", ensureAuthenticated, (req, res) =>  {
+  res.render("weekCalendar");
+});
 // app.get("/users/:username/calendar", async (req, res) => {
 //   try {
 //     const username = req.params.username;
@@ -623,13 +629,7 @@ app.get('/api/pomodoro/last', ensureAuthenticated, async (req, res) => {
 });
 
 // Listen on default port 3000
-app.listen(3001, () => {
-  console.log("Server running on port 3000");
-});
-
-
-
-// Listen on default port 3000
 app.listen(3000, () => {
   console.log("Server running on port 3000");
 });
+
