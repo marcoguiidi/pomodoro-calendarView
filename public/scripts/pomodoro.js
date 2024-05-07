@@ -229,15 +229,17 @@ function pauseSession() {
     console.error('Nessuna sessione attiva da mettere in pausa.');
     return;
   }
-  clearInterval(timerId);
-  isRunning = false;
-  fetch(`/api/pomodoro/${currentSession._id}/pause`, {
-    method: 'PATCH',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ action: 'pause' })
-  })
-  .then(() => debugLog('Sessione messa in pausa.'))
-  .catch(error => console.error('Errore nel mettere in pausa la sessione:', error));
+  if (!currentSession.intervalTime) {
+    clearInterval(timerId);
+    isRunning = false;
+    fetch(`/api/pomodoro/${currentSession._id}/pause`, {
+      method: 'PATCH',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ action: 'pause' })
+    })
+    .then(() => {if (!currentSession.intervalTime) debugLog('Sessione messa in pausa.') })
+    .catch(error => console.error('Errore nel mettere in pausa la sessione:', error));
+  }
 }
 
 // Funzione per riprendere la sessione
