@@ -1,0 +1,24 @@
+body{
+    background-color: #ccc;
+    margin: 0;
+}
+
+.pomodoro-container{
+    text-align: center;
+}
+
+#timer-display{
+    font-size: 300%;
+    color: black;
+}
+
+.pomodoro-container button{
+    border-radius: 10px;
+    background-color: red;
+    color: white;
+    border: solid 1px white;
+}
+
+.navbar{
+    background-color: transparent !important;
+}
