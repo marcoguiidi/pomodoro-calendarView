@@ -4,9 +4,14 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth(); // Nota: i mesi in JavaScript sono indicizzati da 0 a 11
     let currentDay = new Date().getDate();
-    let firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay(); // Ottieni il giorno della settimana del primo giorno del mese
-    let startDay = currentDay - firstDayOfWeek + 1; // Calcola il primo giorno della settimana corrente
+    let weekDay = new Date(currentYear, currentMonth, currentDay).getDay();
+    let startDay = currentDay - weekDay; // Calcola il primo giorno della settimana corrente
+    if (startDay < 1)
+        startDay = 1;
     let endDay = startDay + 6; // Calcola l'ultimo giorno della settimana corrente
+    if (endDay > getDaysInMonth(currentYear, currentMonth))
+        endDay = getDaysInMonth(currentYear, currentMonth);
+
 
 
     // Funzione per ottenere il nome del mese dato il suo indice
