@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {  // When the DOM is r
             document.getElementById('dialogEventTitle').innerHTML = isevent.description; // Set the title
             document.getElementById('dialogEventDate').innerHTML = "Date: " + isevent.date.split('T')[0]; // Set the date
             document.getElementById('dialogEventLocation').innerHTML = "Location: " + isevent.location; // Set the location
-            document.getElementById('dialogEventID').innerHTML = isevent._id;
+
             let parts = document.getElementById('dialogEventParticipants'); // Set the participants
             parts.innerHTML = "Participants: ";
             isevent.participants.forEach(function(participant){ // Loop through the participants
@@ -99,6 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {  // When the DOM is r
             })
 
             dialog.showModal(); 
+            updateAction();
         }
 
         fetch('/events') // Fetch events
@@ -153,24 +154,14 @@ document.addEventListener('DOMContentLoaded', function() {  // When the DOM is r
             dialog.close();
         };
     }
-
-    //non funziona delete event listener
-    // const deleteButtons = document.querySelectorAll('#delete-button');
-
-    // // Aggiungi un event listener a ciascun pulsante di eliminazione
-    // deleteButtons.forEach(deleteButton => {
-    //     deleteButton.addEventListener('click', function() {
-    //         // Ottieni l'ID dell'evento dal data attribute
-    //         const eventID = document.getElementById('dialogEventID').textContent;
-
-    //         // Ottieni l'ID dell'utente corrente
-    //         const userID = "<%= username %>"; // Sostituisci con la logica per ottenere l'ID dell'utente
-
-    //         // Costruisci l'URL con i parametri dell'utente e dell'evento
-    //         const deleteURL = `/users/${userID}/events/delete/${eventID}`;
-
-    //         // Reindirizza l'utente alla pagina di eliminazione
-    //         window.location.href = deleteURL;
-    //     });
-    // });
   });
+
+function updateAction(){
+    let form = document.getElementById('form-event');
+    if (!form)
+        return;
+    let user = '<%= username %>';
+    let event_id = document.getElementById('dialogEventID').textContent;
+
+    form.action = 'users/' + user + '/events/delete/' + event_id;
+}

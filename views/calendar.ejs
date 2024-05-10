@@ -14,27 +14,16 @@
 
 <section>
   <dialog id="eventDialog">
-      <form method="dialog">
+      <form id="form-event" method="post">
         <h2 id="dialogEventTitle"></h2>
         <p id="dialogEventDate"></p>
         <p id="dialogEventLocation"></p>
         <p id="dialogEventID" style="visibility:hidden"></p>
         <ul id="dialogEventParticipants"></ul>
         <button value="close">X</button>
-        <!-- <button id="delete-button">🗑️</button>     <!-- non funziona -->
+        <button id="delete-button" type="submit">🗑️</button>     <!-- non funziona -->
       </form>
   </dialog>
-  <!-- <article>
-      <div style="margin: 20px">
-          <h2>Marzo 2024</h2>
-          <p>Il calendario qui a destra è stato realizzato usando il sistema Grid di CSS. Al contrario, l'allineamento dell'header e dei due main è stato realizzato usando le proprietà Flex.</p>
-          <ul>
-              <li>La pseudo-class <b>:hover</b> consente di modificare dello stile quando si passa il mouse sulle date.</li>
-              <li>La pseudo-class <b>:focus</b> consente di modificare lo stile quando si clicca su un elemento come un input o un bottone.</li>
-              <li>La pseudo-class <b>:active</b> serve per dare feedback all'utente che un elemento ha ricevuto un evento come un click.</li>
-          </ul>
-      </div>
-  </article> -->
   <article>
       <h2 class="month" id="currentMonth"></h2>
       <button id="prevMonthButton" class="changeMonth" >&lt;</button>

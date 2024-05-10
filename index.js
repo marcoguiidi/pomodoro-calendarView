@@ -391,7 +391,7 @@ app.get("/weekCalendar", ensureAuthenticated, (req, res) =>  {
 //   }
 // });
 
-app.post("users/:username/events//delete/:eventID", ensureAuthenticated, async (req, res) => {
+app.post("users/:username/events/delete/:eventID", ensureAuthenticated, async (req, res) => {
     try {
       const eventID = req.params.eventID;
       const event = await Event.findById(eventID);
@@ -405,6 +405,7 @@ app.post("users/:username/events//delete/:eventID", ensureAuthenticated, async (
       }
   
       await Event.findByIdAndDelete(eventID);
+      
   
       res.redirect("/calendar"); // Redirect after successful deletion
     } catch (error) {
