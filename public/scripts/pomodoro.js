@@ -16,7 +16,18 @@ function debugLog(...messages) {
 document.addEventListener('DOMContentLoaded', function() {
   debugLog('Documento caricato. Recupero dati sessione...');
   fetchSessionData();
+  handleVisibilityChange();
 });
+
+// Gestione della visibilità della pagina
+function handleVisibilityChange() {
+  document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'hidden') {
+      debugLog('Pagina non visibile. Metto in pausa il timer.');
+      pauseSession(); // Mette in pausa il timer se la pagina non è visibile
+    }
+  });
+}
 
 // Funzione per recuperare i dati della sessione corrente dal server
 function fetchSessionData() {
@@ -48,6 +59,55 @@ function fetchSessionData() {
   });
 }
 
+// Funzione per aggiornare lo stato della sessione
+function updateSessionState(state) {
+  switch (state) {
+    case 'paused':
+      document.getElementById('start-timer').style.display = 'block';
+      document.getElementById('start-timer').textContent = 'Resume';
+      document.getElementById('pause-timer').style.display = 'none';  
+      document.getElementById('stop-timer').style.display = 'block';
+      if (isRunning) {
+        isRunning = false;
+        clearInterval(timerId);
+        fetchSessionData(); 
+      }
+      break;
+    case 'interval':
+      document.getElementById('start-timer').style.display = 'none';  
+      document.getElementById('pause-timer').style.display = 'none';  
+      document.getElementById('stop-timer').style.display = 'block';
+      if (!isRunning) fetchSessionData();
+      break;
+    case 'active':
+      document.getElementById('start-timer').style.display = 'none'; 
+      document.getElementById('pause-timer').style.display = 'block';  
+      document.getElementById('stop-timer').style.display = 'block';
+      if (!isRunning) {
+        updateTimerDisplay();
+        startTimer();
+      }
+      break;
+    case 'completed':
+      document.getElementById('start-timer').style.display = 'block'; 
+      document.getElementById('pause-timer').style.display = 'none';  
+      document.getElementById('stop-timer').style.display = 'none';
+      if (!isRunning) startNewSession();
+      break;
+    case 'aborted':
+      document.getElementById('start-timer').style.display = 'block'; 
+      document.getElementById('start-timer').textContent = 'Start Again';
+      document.getElementById('pause-timer').style.display = 'none';  
+      document.getElementById('stop-timer').style.display = 'none';
+      break;
+    default:
+      debugLog('Stato della sessione non riconosciuto.');
+  }
+
+  document.getElementById('timer-status').textContent = state.toUpperCase();
+  debugLog('Stato della sessione:', state);
+}
+
 // Funzione per inizializzare il timer basandosi sui dati della sessione
 function initializeTimer(data) {
   debugLog('Inizializzazione timer con dati:', data);
@@ -58,27 +118,27 @@ function initializeTimer(data) {
   let sessionState;
 
   if (data.pausedTime) {
-    sessionState = 'pausa';
+    sessionState = 'paused';
   } else if (!data.completed) {
     if (data.intervalTime) {
-      sessionState = 'intervallo';
+      sessionState = 'interval';
     } else {
-      sessionState = 'attiva';
+      sessionState = 'active';
     }
   } else {
-    sessionState = 'completata';
+    sessionState = 'completed';
   }
 
   debugLog('Stato della sessione:', sessionState);
 
   switch (sessionState) {
-    case 'pausa':
+    case 'paused':
       pausedDuration = (now.getTime() - new Date(data.pausedTime).getTime()) / 1000;
       duration = data.durationMinutes * 60 - (elapsed - pausedDuration - data.totalPausedDuration);
       updateTimerDisplay();
       debugLog('Sessione ripristinata dalla pausa. Tempo di pausa effettivo:', pausedDuration);
       break;
-    case 'intervallo':
+    case 'interval':
       const intervalTime = new Date(data.intervalTime);
       const intervalElapsed = (now.getTime() - intervalTime.getTime()) / 1000;
       const intervalMinutes = data.cycle % 4 === 0 ? data.longBreakMinutes * 60 : data.breakMinutes * 60;
@@ -87,13 +147,13 @@ function initializeTimer(data) {
       startTimer();
       debugLog('Sessione in pausa pranzo. Tempo rimanente:', duration);
       break;
-    case 'attiva':
+    case 'active':
       duration = data.durationMinutes * 60 - (elapsed - data.totalPausedDuration);
       updateTimerDisplay();
       startTimer();
       debugLog('Sessione attiva. Durata rimanente:', duration);
       break;
-    case 'completata':
+    case 'completed':
       debugLog('Sessione marcata come completata. Reset e avvio di una nuova sessione.');
       resetTimer();
       startNewSession();
@@ -101,6 +161,9 @@ function initializeTimer(data) {
     default:
       debugLog('Stato della sessione non riconosciuto.');
   }
+
+  updateSessionState(sessionState);
+  setInterval(updatePausedTimerDisplay, 1000); // Aggiorna il timer di pausa ogni secondo
 }
 
 // Gestione degli eventi click per i bottoni di controllo del timer
@@ -170,6 +233,7 @@ function updateTimer() {
     default:
       debugLog('Stato del timer non riconosciuto.');
   }
+
 }
 
 // Funzione per aggiornare il display del timer
@@ -177,9 +241,27 @@ function updateTimerDisplay() {
   let seconds = Math.floor(duration);
   let minutes = Math.floor(seconds / 60);
   seconds %= 60;
-  document.getElementById('timer-display').textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  document.getElementById('timer-display').textContent = ` ${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
   debugLog(`Aggiornamento display timer: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`);
 }
+
+function updatePausedTimerDisplay() {
+  if (currentSession && currentSession.pausedTime) {
+    const now = new Date();
+    let totalPausedDuration = Number(currentSession.totalPausedDuration) || 0;  // Assicurati di definire la variabile qui
+    const pausedTime = new Date(currentSession.pausedTime);
+    const pausedDuration = (now.getTime() - pausedTime.getTime()) / 1000;
+    totalPausedDuration += pausedDuration;  // Aggiungi la durata corrente della pausa al totale
+
+    const pausedMinutes = Math.floor(totalPausedDuration / 60);
+    const pausedSeconds = Math.floor(totalPausedDuration % 60);
+    const maxPausedMinutes = Math.floor(currentSession.maxPausedDuration / 60);
+    const maxPausedSeconds = Math.floor(currentSession.maxPausedDuration % 60);
+    document.getElementById('timer-display').textContent = `${pausedMinutes}:${pausedSeconds < 10 ? '0' + pausedSeconds : pausedSeconds} / ${maxPausedMinutes}:${maxPausedSeconds < 10 ? '0' + maxPausedSeconds : maxPausedSeconds}`;
+    debugLog(`Aggiornamento display timer in pausa: ${pausedMinutes}:${pausedSeconds < 10 ? '0' : ''}${pausedSeconds}`);
+  }
+}
+
 
 // Funzione per resettare il timer
 function resetTimer() {
@@ -210,15 +292,12 @@ function startNewSession() {
       console.error('Dati della sessione non validi:', data);
       throw new Error('Dati della sessione ricevuti non validi');
     }
+    updateSessionState('active');
     currentSession = data;
     duration = data.durationMinutes * 60;
-    updateTimerDisplay();
-    startTimer();
   })
   .catch(error => {
     console.error('Errore nell\'avvio della nuova sessione:', error);
-    duration = 0; // Imposta una durata predefinita in caso di errore
-    updateTimerDisplay();
   });
 }
 
@@ -230,14 +309,15 @@ function pauseSession() {
     return;
   }
   if (!currentSession.intervalTime) {
-    clearInterval(timerId);
-    isRunning = false;
     fetch(`/api/pomodoro/${currentSession._id}/pause`, {
       method: 'PATCH',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ action: 'pause' })
     })
-    .then(() => {if (!currentSession.intervalTime) debugLog('Sessione messa in pausa.') })
+    .then(() => { 
+      updateSessionState('paused'); 
+      debugLog('Sessione messa in pausa.'); 
+    })
     .catch(error => console.error('Errore nel mettere in pausa la sessione:', error));
   }
 }
@@ -256,8 +336,8 @@ function resumeSession() {
   })
   .then(response => response.json())
   .then(data => {
-    isRunning = true;
-    timerId = setInterval(updateTimer, 1000);
+    currentSession = data;
+    updateSessionState('active');
     debugLog('Sessione ripresa.');
   })
   .catch(error => console.error('Errore nella ripresa della sessione:', error));
@@ -276,14 +356,9 @@ function completeSession(state) {
     body: JSON.stringify({ action: 'stop', state: state })
   })
   .then(() => {
-    debugLog(`Sessione completata con stato: ${state}`);
     resetTimer();
-    if (state === 'completed') {
-      startNewSession();
-    }
-    if (state === 'interval') {
-      fetchSessionData();
-    }
+    updateSessionState(state);
+    debugLog(`Sessione completata con stato: ${state}`);
   })
   .catch(error => console.error('Errore nel completamento della sessione:', error));
 }
